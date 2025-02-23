@@ -11,13 +11,14 @@ import time
 #urllib.request.urlretrieve(url, filename)
 
 
-model_type = "DPT_Large"     # MiDaS v3 - Large     (highest accuracy, slowest inference speed)
-#model_type = "DPT_Hybrid"   # MiDaS v3 - Hybrid    (medium accuracy, medium inference speed)
+# model_type = "DPT_Large"     # MiDaS v3 - Large     (highest accuracy, slowest inference speed)
+model_type = "DPT_Hybrid"   # MiDaS v3 - Hybrid    (medium accuracy, medium inference speed)
 #model_type = "MiDaS_small"  # MiDaS v2.1 - Small   (lowest accuracy, highest inference speed)
 
 midas = torch.hub.load("intel-isl/MiDaS", model_type)
 
 device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
+print(device)
 midas.to(device)
 midas.eval()
 
@@ -52,6 +53,7 @@ with torch.no_grad():
 #z = torch.exp(prediction/5)
 #cv2.imwrite("tmp.png", z.cpu().numpy())
 #prediction = torch.exp(prediction / 5)
+print(prediction)
 
 z = torch.mean(prediction, dim=0)
 z = z.unsqueeze(0)
