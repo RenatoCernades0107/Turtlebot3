@@ -1,6 +1,7 @@
 import asyncio
 import websockets
 
+
 # Cambia la IP por la de tu servidor
 SERVER_IP = "localhost"  # Cambia por la IP del servidor
 PORT = 8765
@@ -17,3 +18,4 @@ async def send_message():
 
 # Ejecutar el cliente WebSocket
 asyncio.run(send_message())
+# q
