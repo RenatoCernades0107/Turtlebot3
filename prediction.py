@@ -10,35 +10,6 @@ from transformers import pipeline
 from PIL import Image
 import json
 
-
-'''
-OLD MODEL
-# if model == 'large':
-#     model_type = "DPT_Large"   # MiDaS v3 - Large     (highest accuracy, slowest inference speed)
-# elif model == 'hybrid':
-#     model_type = "DPT_Hybrid"  # MiDaS v3 - Hybrid    (medium accuracy, medium inference speed)
-# elif model == 'small':
-#     model_type = "MiDaS_small" # MiDaS v2.1 - Small   (lowest accuracy, highest inference speed)
-# else:
-#     raise ValueError('Select (large/hybrid/small) model to predict the depth map.')
-# model_type = 'DPT_Large'
-# midas = torch.hub.load("intel-isl/MiDaS", model_type)
-
-# device = torch.device("cuda") if torch.cuda.is_available() else torch.device("cpu")
-
-# print(f'Using {device} for prediction...')
-
-# midas.to(device)
-# midas.eval()
-
-# midas_transforms = torch.hub.load("intel-isl/MiDaS", "transforms")
-
-# if model_type == "DPT_Large" or model_type == "DPT_Hybrid":
-#     transform = midas_transforms.dpt_transform
-# else:
-#     transform = midas_transforms.small_transform
-'''
-
 pipe = pipeline(task="depth-estimation", model="depth-anything/Depth-Anything-V2-Small-hf")
 
 def forcast_x_min_depth(image, _time=''):
@@ -77,15 +48,23 @@ def forcast_x_min_depth(image, _time=''):
 
     # Save prediction in file
     with open(f'out_vector/vector_and_direction.txt', 'a')  as f:
-        f.write(json.dumps(i.tolist())  + json.dumps(prediction.tolist()) + '\n')
+        formatted_prediction = [f"{x:.2f}" for x in prediction.tolist()]  # Formatea cada número con 2 decimales
+        f.write(f'({_time}): ' + json.dumps(i.tolist()) + " -> " + json.dumps(formatted_prediction, indent=2) + "\n")
         
-    return i.item()
+    return i.item(), prediction
 
 
 def estimate_robot_motion(image, _time=''):
-    w = forcast_x_min_depth(image,  _time=_time)
+    w, pred_vec = forcast_x_min_depth(image,  _time=_time)
+
+    # Si hay numeros en el vector con 
+    # un valor mayor a 0.95 puede 
+    # significar un posible choque, 
+    # por lo tanto retroceder.
 
     # Return velocity and normalized angular velocity
-    return 0.2, w
+    w = w / 3.45
+    print("w:", w)
+    return 0.2, w / 3.45
 
 # q
