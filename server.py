@@ -22,11 +22,12 @@ async def handler(websocket):
                 current_time = datetime.now().strftime("%H:%M:%S")
                 print("Tiempo:", current_time)
                 cv2.imwrite(f"images/img-{current_time}.png", image)
-            v, w = estimate_robot_motion(image, _time=current_time, _debug=DEBUG)
+            v, w, d = estimate_robot_motion(image, _time=current_time, _debug=DEBUG)
 
             res = {
                 'vel': v,
-                'vel_ang': w
+                'vel_ang': w,
+                'duration': d
             }
             res = pickle.dumps(res)
             await websocket.send(res)  # Respuesta al cliente
