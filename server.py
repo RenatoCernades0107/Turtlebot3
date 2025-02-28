@@ -1,29 +1,28 @@
 import asyncio
 import websockets
 import pickle
-from cv_bridge import CvBridge
 import cv2
 from random import randint
 from prediction import estimate_robot_motion
 from datetime import datetime
 
 # q
-bridge = CvBridge()
+DEBUG = True
 
 async def handler(websocket):
     try:
         async for msg in websocket:
-            print("Imagen recibida")
             try:
                 image = pickle.loads(msg)
-                # image = bridge.imgmsg_to_cv2(image, "rgb8")
             except Exception as e:
                 raise pickle.PickleError("Error al cargar la imagen")
-            
-            current_time = datetime.now().strftime("%H:%M:%S")
-            print("Tiempo:", current_time)
-            cv2.imwrite(f"images/img-{current_time}.png", image)
-            v, w = estimate_robot_motion(image, _time=current_time)
+
+            current_time = '' 
+            if DEBUG:
+                current_time = datetime.now().strftime("%H:%M:%S")
+                print("Tiempo:", current_time)
+                cv2.imwrite(f"images/img-{current_time}.png", image)
+            v, w = estimate_robot_motion(image, _time=current_time, _debug=DEBUG)
 
             res = {
                 'vel': v,
