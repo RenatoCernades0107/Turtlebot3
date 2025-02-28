@@ -3,6 +3,7 @@ import torch
 import time
 import numpy as np
 from random import randint
+import os
 
 from transformers import pipeline
 from PIL import Image
@@ -10,6 +11,8 @@ import json
 
 pipe = pipeline(task="depth-estimation", model="depth-anything/Depth-Anything-V2-Small-hf")
 
+os.makedirs('out_vector', exist_ok=True)
+os.makedirs('predictions', exist_ok=True)
 
 def dividir_imagen_con_sombra(img, barra_index):
     # Convertir imagen a numpy si no lo es
@@ -98,18 +101,6 @@ def estimate_robot_motion(image, _time='', _debug=False):
         if prediction[i] > 0.85:
             v = -0.2
     
-    # w = 5
-    # if i < 0:
-    #     w = -5
-
-
-    # f = 35
-    # p = prediction[5]
-    # a = torch.tensor([1., 0.])
-    # b = torch.tensor([p, w*f/prediction[5-i]])
-    # t = torch.arccos(torch.dot(a, b)/(torch.norm(a)*torch.norm(b))) / w
-    
-
     # Return velocity and normalized angular velocity
     if _debug:
         print("Velocidad Angular:", w)

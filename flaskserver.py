@@ -6,7 +6,7 @@ from datetime import datetime
 import os
 
 app = Flask(__name__)
-DEBUG = True
+DEBUG = False
 UPLOAD_FOLDER = 'images'
 os.makedirs(UPLOAD_FOLDER, exist_ok=True)
 
@@ -30,7 +30,7 @@ def process_image():
             'vel_ang': w,
             'duration': d
         }
-        return pickle.dumps(response)
+        return jsonify(response)
     
     except pickle.PickleError:
         return jsonify({'error': 'Error al cargar la imagen'}), 400
